@@ -4,6 +4,32 @@
 
 SchemaGuard checks UTF-8 CSV datasets against saved contracts and keeps validation history. This is the contract validation slice of the [product specification (Issue #1)](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/1), implemented for [Issue #2](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/2). Browser tests and the Docker runtime follow [Issue #3](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/3). Agent context follows [Issue #7](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/7).
 
+
+
+   ## Live Application
+
+   **Deployment:** Render (Docker)
+
+   - [Live Dashboard](https://schemaguard-2026.onrender.com/)
+   - [Interactive API Documentation](https://schemaguard-2026.onrender.com/docs)
+   - [Health Check](https://schemaguard-2026.onrender.com/api/health)
+   - [GitHub CI](https://github.com/devPaulX/schema-guard-zoomcamp-2026/actions)
+   - [Deployment and Rollback Guide](docs/deployment.md)
+
+   ### Deployment Status
+
+   - Public HTTPS application deployed successfully.
+   - FastAPI backend and frontend operational.
+   - CSV contract creation and validation verified.
+   - CI pipeline successfully executed.
+   - Docker Compose supports persistent local SQLite storage.
+
+   **Note:** Render Free uses ephemeral storage.
+   Data may be lost when the instance restarts or redeploys.
+   The public deployment is intended for demonstration only.
+   Do not upload sensitive datasets.
+   
+
 ## Requirements and setup
 
 Python 3.12 or newer. Run these PowerShell commands from the repository root:
@@ -59,7 +85,11 @@ The volume also survives a later `docker compose up --build -d`. A local `data/s
 - [ ] A disposable contract, CSV validation result, and history entry appear in the public dashboard.
 - [ ] A previous successful deploy can be restored using the [rollback steps](docs/deployment.md#manual-rollback-on-render), then its public endpoints are checked again.
 
-Record actual CI, deploy, and rollback evidence when these steps have been performed; this checklist does not claim a live deployment.
+Initial public deployment verified on 16 November 2026.
+Render service: schemaguard-2026.
+Initial deployed commit: 9cf5694.
+Rollback procedure documented; actual rollback
+has not yet been demonstrated.
 
 ## Validation behavior
 
