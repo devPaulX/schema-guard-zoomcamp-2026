@@ -1,5 +1,7 @@
 # SchemaGuard
 
+[![CI](https://github.com/devPaulX/schema-guard-zoomcamp-2026/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/devPaulX/schema-guard-zoomcamp-2026/actions/workflows/ci.yml)
+
 SchemaGuard checks UTF-8 CSV datasets against saved contracts and keeps validation history. This is the contract validation slice of the [product specification (Issue #1)](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/1), implemented for [Issue #2](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/2). Browser tests and the Docker runtime follow [Issue #3](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/3). Agent context follows [Issue #7](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/7).
 
 ## Requirements and setup
@@ -47,7 +49,17 @@ Stop the application without deleting the database volume:
 docker compose down
 ```
 
-The volume also survives a later `docker compose up --build -d`. A local `data/schemaguard.db` and the Docker volume are separate data stores. `docker compose down --volumes` deletes the Docker database and should only be used when intentionally discarding it.
+The volume also survives a later `docker compose up --build -d`. A local `data/schemaguard.db` and the Docker volume are separate data stores. `docker compose down --volumes` deletes the Docker database and should only be used when intentionally discarding it. See the [deployment and rollback guide](docs/deployment.md) for Render and persistent local Docker procedures.
+
+## Deployment verification checklist
+
+- [ ] The `CI / test-and-build` check passes for the deployed `main` commit, including the Chromium browser test and Docker build.
+- [ ] Render auto-deploy is set to **After CI Checks Pass**, and the live deploy shows that commit.
+- [ ] The public `/api/health` endpoint returns HTTP 200 and `{"status":"ok"}`; the dashboard loads over HTTPS.
+- [ ] A disposable contract, CSV validation result, and history entry appear in the public dashboard.
+- [ ] A previous successful deploy can be restored using the [rollback steps](docs/deployment.md#manual-rollback-on-render), then its public endpoints are checked again.
+
+Record actual CI, deploy, and rollback evidence when these steps have been performed; this checklist does not claim a live deployment.
 
 ## Validation behavior
 
@@ -57,4 +69,4 @@ Create a uniquely named contract with at least one unique, nonempty required col
 
 Read the relevant GitHub Issue and its acceptance criteria before changing code. Follow [AGENTS.md](AGENTS.md), [architecture](docs/architecture.md), and [agent roles](docs/agent-roles.md). The Engineer implements and records actual verification; the QA Reviewer checks against the issue. Issue comments and closure require authorization.
 
-This single-user slice has no authentication, incident response, automated recovery, external AI service, or deployment work.
+This single-user slice has no authentication, incident response, automated recovery, or external AI service. The Render Free deployment described above is for a disposable demo because its SQLite database is ephemeral.
