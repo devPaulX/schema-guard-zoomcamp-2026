@@ -1,21 +1,60 @@
 # SchemaGuard
 
-## Problem
-Data teams need a quick way to detect invalid CSV
-datasets before downstream processing.
+SchemaGuard checks UTF-8 CSV datasets against saved contracts and keeps validation history. This is the contract validation slice of the [product specification (Issue #1)](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/1), implemented for [Issue #2](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/2). Browser tests and the Docker runtime follow [Issue #3](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/3). Agent context follows [Issue #7](https://github.com/devPaulX/schema-guard-zoomcamp-2026/issues/7).
 
-## Solution
-SchemaGuard validates CSV files against dataset
-contracts and stores validation history.
+## Requirements and setup
 
-## Expected behavior
-- Create a dataset contract with required columns.
-- Specify the maximum allowed missing-value rate.
-- Upload a CSV file for validation.
-- Display PASS or FAIL with explicit reasons.
-- Save and browse historical validation runs.
-- Preserve local data across application restarts.
+Python 3.12 or newer. Run these PowerShell commands from the repository root:
 
-## Scope
-Single-user educational application.
-No authentication or external AI API required.
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m playwright install chromium
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
+
+Open <http://127.0.0.1:8000/> for the dashboard and <http://127.0.0.1:8000/docs> for interactive API documentation. Contracts and results persist in the ignored `data/schemaguard.db` file.
+
+The Playwright installation downloads headless Chromium once. Run the complete suite, including the real browser smoke test, from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+```
+
+For other shells, create a Python 3.12+ virtual environment and use its `python -m pip install -r requirements.txt`, `python -m playwright install chromium`, `python -m uvicorn app.main:app --reload`, and `python -m pytest -q` commands. On Linux, install any missing Chromium system libraries with `python -m playwright install --with-deps chromium`.
+
+## Docker Compose
+
+With Docker running, start the complete application from the repository root:
+
+```sh
+docker compose up --build -d
+docker compose ps
+```
+
+Open <http://127.0.0.1:8000/> for the dashboard, <http://127.0.0.1:8000/docs> for API documentation, and <http://127.0.0.1:8000/api/health> for health status. Compose maps port 8000 and mounts the named `schemaguard_data` volume at `/app/data`. SQLite is stored at `/app/data/schemaguard.db`; uploaded CSV contents are never stored.
+
+Restart the container and confirm that contracts and validation history remain available:
+
+```sh
+docker compose restart
+docker compose ps
+```
+
+Stop the application without deleting the database volume:
+
+```sh
+docker compose down
+```
+
+The volume also survives a later `docker compose up --build -d`. A local `data/schemaguard.db` and the Docker volume are separate data stores. `docker compose down --volumes` deletes the Docker database and should only be used when intentionally discarding it.
+
+## Validation behavior
+
+Create a uniquely named contract with at least one unique, nonempty required column name and a missing-value threshold from 0 to 100 percent. Upload a UTF-8 CSV up to 5 MiB. Header comparison is case-sensitive. Empty or whitespace-only cells count as missing. Missing required columns or a missing percentage above the threshold produce `FAIL` with every reason. Empty, malformed, non-UTF-8, headerless, inconsistent-width, and oversized files return an API error. The uploaded CSV is never altered or stored.
+
+## Development workflow
+
+Read the relevant GitHub Issue and its acceptance criteria before changing code. Follow [AGENTS.md](AGENTS.md), [architecture](docs/architecture.md), and [agent roles](docs/agent-roles.md). The Engineer implements and records actual verification; the QA Reviewer checks against the issue. Issue comments and closure require authorization.
+
+This single-user slice has no authentication, incident response, automated recovery, external AI service, or deployment work.

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SchemaGuard</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <span class="eyebrow">DATA QUALITY / LOCAL WORKSPACE</span>
+      <h1>SchemaGuard</h1>
+      <p>Check a CSV against a dataset contract before it reaches your pipeline.</p>
+    </header>
+
+    <div class="grid">
+      <section class="card" aria-labelledby="contract-title">
+        <div class="section-heading"><span class="step">01</span><h2 id="contract-title">Create a contract</h2></div>
+        <p class="help">Required column names must match CSV headers exactly.</p>
+        <form id="contract-form">
+          <label for="contract-name">Contract name</label>
+          <input id="contract-name" name="name" placeholder="Daily orders" required>
+          <label for="required-columns">Required columns</label>
+          <textarea id="required-columns" name="required_columns" rows="3" placeholder="order_id, customer_id, amount" required></textarea>
+          <span class="hint">Separate names with commas. Names are case-sensitive.</span>
+          <label for="threshold">Maximum missing values (%)</label>
+          <input id="threshold" name="missing_value_threshold" type="number" min="0" max="100" step="any" value="0" required>
+          <button type="submit">Save contract</button>
+          <p id="contract-message" class="message" role="status"></p>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="validate-title">
+        <div class="section-heading"><span class="step">02</span><h2 id="validate-title">Validate a CSV</h2></div>
+        <p class="help">UTF-8 CSV, up to 5 MiB. Your file contents are not saved.</p>
+        <form id="validation-form">
+          <label for="contract-select">Dataset contract</label>
+          <select id="contract-select" name="contract_id" required><option value="">Loading contracts…</option></select>
+          <label for="csv-file">CSV file</label>
+          <input id="csv-file" name="file" type="file" accept=".csv,text/csv" required>
+          <button type="submit">Run validation</button>
+        </form>
+        <div id="validation-result" class="result" role="status" aria-live="polite">Choose a contract and CSV to see a result.</div>
+      </section>
+    </div>
+
+    <section class="card history" aria-labelledby="history-title">
+      <div class="section-heading"><span class="step">03</span><h2 id="history-title">Validation history</h2></div>
+      <p id="history-state" class="help" role="status">Loading history…</p>
+      <div id="history-list" class="history-list"></div>
+    </section>
+  </main>
+</body>
+</html>
